@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login com Google</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <style>
+      .google-icon {
+        font-size: 36px;
+        margin-right: 10px;
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body class="flex justify-center items-center h-screen bg-gray-100">
+    <div class="w-full max-w-md">
+      <div class="bg-white p-8 rounded shadow-lg text-center">
+        <h2 class="text-2xl font-semibold mb-4">Bem-vindo!</h2>
+        <div
+          class="mb-4 flex items-center justify-center cursor-pointer bg-gray-100 rounded p-2 hover:bg-gray-200 transition"
+          id="login-container"
+        >
+          <span class="google-icon material-icons text-blue-500"
+            >account_circle</span
+          >
+          <span>Login com Google</span>
+        </div>
+        <div id="user-details" class="hidden mt-4">
+          <h2 class="text-2xl font-semibold mb-4">Detalhes do usuário</h2>
+          <div id="user-name" class="mb-2"></div>
+          <div id="user-email"></div>
+          <div id="user-picture"></div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const loginContainer = document.getElementById('login-container');
+      const userDetailsContainer = document.getElementById('user-details');
+      const userNameElement = document.getElementById('user-name');
+      const userEmailElement = document.getElementById('user-email');
+      const userPictureElement = document.getElementById('user-picture');
+
+      loginContainer.addEventListener('click', () => {
+        const popup = window.open(
+          'http://localhost:3000/auth/google',
+          'Login com Google',
+          'width=500,height=600'
+        );
+
+        window.addEventListener('message', (event) => {
+          if (event.data.message === 'loginSuccess') {
+            popup.close();
+            const userDetails = event.data.user;
+
+            userNameElement.textContent = `Nome: ${userDetails.user.name}`;
+            userEmailElement.textContent = `Email: ${userDetails.user.email}`;
+            userPictureElement.innerHTML = `<img src="${userDetails.user.profilePicture}" alt="Foto de perfil" class="w-32 h-32 rounded-full mx-auto mb-4" />`;
+
+            loginContainer.classList.add('hidden');
+            userDetailsContainer.classList.remove('hidden');
+            window.localStorage.setItem('auth', JSON.stringify(userDetails));
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
