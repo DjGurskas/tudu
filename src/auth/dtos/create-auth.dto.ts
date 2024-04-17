@@ -3,9 +3,8 @@ import { Column } from 'typeorm';
 
 export class CreateAuthDto {
 
-  
   @ApiProperty()
-  googleId: string;
+  id: number;
 
   @ApiProperty()
   name: string;

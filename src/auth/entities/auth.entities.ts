@@ -9,11 +9,8 @@ import {
 
 @Entity({ name: 'users' })
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
-
-  @Column({ name: 'googleId' })
-  googleId: string;
 
   @Column({ name: 'name' })
   name: string;
@@ -25,8 +22,8 @@ export class User {
   picture: string;
 
   @CreateDateColumn({ name: 'created_at' })
-  createdAt: string;
+  createdAt: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: string;
+  updatedAt: Date;
 }
