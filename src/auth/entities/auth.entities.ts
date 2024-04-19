@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -18,12 +17,12 @@ export class User {
   @Column({ name: 'email', nullable: false, unique: true })
   email: string;
 
-  @Column({ name: 'picture' })
-  picture: string;
+  @Column({ name: 'password', nullable: false })
+  password: string;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 }

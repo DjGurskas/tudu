@@ -1,29 +1,57 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
 import { User } from './auth/entities/auth.entities';
+import { PassportModule } from '@nestjs/passport';
+
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    TypeOrmModule.forRoot({
-      type:'postgres',
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      database: process.env.DB_NAME,
-      username: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      synchronize: true,
-      logging: false,
-      entities: [User],
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env'
+    }),  
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+
+        type: 'postgres',
+        host:  configService.get('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get('DB_USERNAME'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_NAME'),
+        entities: [User, ],
+        synchronize: true,
+      }),
+      inject: [ConfigService]
     }),
-    AuthModule
+     AuthModule,
+    
+    PassportModule.register({ session: true }),
   ],
-  controllers: [AppController, AuthController],
+  controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(
+    private readonly configService: ConfigService
+  ){
+    console.log({
+      type: 'postgres',
+        host:  configService.get('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get('DB_USERNAME'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_NAME'),
+        entities: [User],
+        synchronize: true,
+  });
+    
+  }
+
+}
