@@ -5,8 +5,8 @@ services:
     image: postgres
     restart: always
     environment:
-      POSTGRES_DB: tudu
+      POSTGRES_DB: railway
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ctwOtCIwuXmctrZFMezTBQCJuBnTmDks
     ports:
-      - "5432:5432"
+      - "20570:20570"

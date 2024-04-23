@@ -1,5 +1,5 @@
 import { PassportStrategy } from '@nestjs/passport';
-import { Profile, Strategy } from 'passport-google-oauth20';
+import { Profile, Strategy, VerifyCallback } from 'passport-google-oauth20';
 import {
   Inject,
   Injectable,
@@ -23,46 +23,37 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     });
   }
 
-  async validate(accessToken: string, refreshToken: string, profile: Profile,) {
-      console.log(profile)
-      console.log(accessToken)
-      console.log(refreshToken)
-      const user = await this.authService.validateUser({
-        email: profile.emails[0].value,
-        name: profile.displayName,
+  async validate(
+    accessToken: string,
+    refreshToken: string,
+    profile: any,
+    done: VerifyCallback,
+  ): Promise<any> {
+    const { google_id, names, emails, photos } = profile;
+
+    const user = {
+      id: google_id,
+      email: emails[0].value,
+      name: names,
+      picture: photos[0].value,
+      accessToken,
+      refreshToken,
+    };
+
+    const token = this.jwtService.sign(user);
+
+    try {
+      done(null, {
+        success: true,
+        user,
+        token,
       });
-      console.log('Validate')
-      console.log(user)
-      return user || null;
-
+    } catch (err) {
+      done(err, {
+        success: false,
+        user: null,
+        token: null,
+      });
+    }
   }
-
-  // async googleAuthRedirect(@Req() req, @Res() res) {
-  //   try {
-  //     const successMessage = 'loginSuccess';
-  //     const user = req.user;
-
-  //     if (!user) {
-  //       throw new UnauthorizedException();
-  //     } // Redireciona ou retorna uma resposta de sucesso conforme necessário
-  //   } catch (error) {
-  //     console.log(error);
-  //     throw new UnauthorizedException(); // Lança uma exceção de não autorizado em caso de erro
-  //   }
-  // }
-
-  // async handleRedirect(@Req() req, @Res() res) {
-  //   try {
-  //     const successMessage = 'loginSuccess';
-  //     const user = req.user;
-
-  //     if (!user) {
-  //       throw new UnauthorizedException();
-  //     }
-  //     // Redireciona ou retorna uma resposta de sucesso conforme necessário
-  //   } catch (error) {
-  //     console.log(error);
-  //     throw new UnauthorizedException();
-  //   }
-  // }
 }
