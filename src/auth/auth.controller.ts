@@ -2,20 +2,30 @@ import { Controller, Get, HttpCode, HttpStatus, Post, Put, Req, Res, UseGuards }
 import { ApiTags } from '@nestjs/swagger';
 //import { GoogleAuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
+import { AuthGuard } from '@nestjs/passport';
+import { GoogleAuthGuard } from './auth.guard';
 
-@ApiTags('Auth')
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // @UseGuards(GoogleAuthGuard)
   @Get('google')
   @HttpCode(HttpStatus.OK)
-  async handleLogin(@Req() req) {
-    return req.user;
-  }
+  @UseGuards(GoogleAuthGuard)
+  async googleAuth(@Req()req){
+    try{
+      const user = req.user
+      return user
 
-  @Get('google/redirect')
+    }catch(error){
+      console.log(error)
+    }
+    }
+  
+
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
   async handleRedirect(@Req() req, @Res() res) {
     try {
       const successMessage = 'RedirectSuccess';
@@ -36,6 +46,7 @@ export class AuthController {
         message: successMessage,
       })}, '*');window.close();</script>`;
       // Enviando uma mensagem para a janela pai, se houver, e fechando a janela atual
+    //substittuir por res.redirect('endpoint da aplicação')
       res.send(successMessage + script);
     } catch (error) {
       const nosuccessMessage = 'RedirectNoSuccess';

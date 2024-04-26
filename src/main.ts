@@ -16,8 +16,7 @@ async function bootstrap() {
   .setTitle('Tudu API')
   .setDescription('The Tudu API description')
   .addBearerAuth()
-  .addTag('Tudu')
-  .addTag('Auth')
+  .addTag('auth')
   .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -27,6 +26,5 @@ async function bootstrap() {
   await app.listen(port).then(() => {
     console.log(`Application is running on: ${port}`);
   });
-
 }
 bootstrap();

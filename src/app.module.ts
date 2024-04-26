@@ -32,9 +32,9 @@ import { PassportModule } from '@nestjs/passport';
     }),
      AuthModule,
     
-    PassportModule.register({ session: true }),
+    // PassportModule.register({ session: true }),
   ],
-  controllers: [AppController],
+  controllers: [AppController, AuthController],
   providers: [AppService],
 })
 export class AppModule {
